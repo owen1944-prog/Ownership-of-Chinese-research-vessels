@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>中國科研船隸屬圖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 國家 → 中央／地方／體系外 三段；每段內以卡片呈現部委或省，卡內用縮排樹表示下屬層級，葉節點掛船名。位置＝行政隸屬（C/D 欄），顏色＝體系（E 欄）。 */
+:root{
+  --bg:#f5f7f9; --panel:#ffffff; --ink:#17212b; --muted:#5b6875; --line:#c9d2db; --soft:#e8edf2; --focus:#1f6f9a; --warn:#a23b3b;
+  --mnr:#1f6f9a; --cas:#6a4fb0; --edu:#2e7d4f; --moa:#93700f; --soe:#a23b3b; --loc:#c25e14; --pla:#5b6b2f; --pvt:#6f6257; --unk:#8a949e;
+  --mnr-bg:#e3f0f7; --cas-bg:#eeeaf8; --edu-bg:#e4f2e9; --moa-bg:#f6efd9; --soe-bg:#f6e3e3; --loc-bg:#fbeadc; --pla-bg:#ecefe0; --pvt-bg:#efebe7; --unk-bg:#eef0f2;
+  --display:"Noto Serif TC","Songti TC",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11161b; --panel:#182028; --ink:#e4eaf0; --muted:#97a4b0; --line:#34414d; --soft:#222c36; --focus:#6cb6de; --warn:#e38585;
+  --mnr:#6cb6de; --cas:#ad98ec; --edu:#7ccb98; --moa:#d9b452; --soe:#e38585; --loc:#ef9a5a; --pla:#a9bb6e; --pvt:#b8a898; --unk:#8f9aa5;
+  --mnr-bg:#16303f; --cas-bg:#28223f; --edu-bg:#173225; --moa-bg:#332910; --soe-bg:#3a1d1f; --loc-bg:#3a2516; --pla-bg:#2a3016; --pvt-bg:#2c2723; --unk-bg:#232b33;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161b; --panel:#182028; --ink:#e4eaf0; --muted:#97a4b0; --line:#34414d; --soft:#222c36; --focus:#6cb6de; --warn:#e38585;
+  --mnr:#6cb6de; --cas:#ad98ec; --edu:#7ccb98; --moa:#d9b452; --soe:#e38585; --loc:#ef9a5a; --pla:#a9bb6e; --pvt:#b8a898; --unk:#8f9aa5;
+  --mnr-bg:#16303f; --cas-bg:#28223f; --edu-bg:#173225; --moa-bg:#332910; --soe-bg:#3a1d1f; --loc-bg:#3a2516; --pla-bg:#2a3016; --pvt-bg:#2c2723; --unk-bg:#232b33;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 56px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:.02em}
+.lede{color:var(--muted);max-width:68ch;margin:8px 0 0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.legend .lab{font-size:12px;color:var(--muted);letter-spacing:.06em;margin-right:4px}
+.key{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.sw{width:12px;height:12px;border-radius:2px;background:var(--c);flex:none}
+.legend hr{flex-basis:100%;border:0;border-top:1px dashed var(--line);margin:2px 0}
+
+/* root + sections */
+.root{display:flex;flex-direction:column;align-items:center}
+.root .node{background:var(--ink);color:var(--bg);padding:10px 22px;border-radius:4px;font-family:var(--display);font-weight:800;font-size:18px;text-align:center;display:flex;flex-direction:column}
+.root .node small{font-family:var(--body);font-weight:400;font-size:12px;opacity:.8}
+.trunk{width:2px;height:22px;background:var(--line)}
+.tier{display:flex;flex-direction:column;gap:14px;border-top:2px solid var(--ink);padding-top:14px}
+.tier-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.tier-head h2{font-size:20px;font-weight:800}
+.tier-head p{margin:0;color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px;align-items:start}
+
+.card{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:4px;padding:14px 14px 12px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card-head>div:first-child{min-width:0;display:flex;flex-direction:column}
+.card-head h3{font-size:17px;font-weight:800;line-height:1.35}
+.type{font-size:11.5px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
+.tally{flex:none;text-align:right;font-size:11.5px;color:var(--muted);line-height:1.35}
+.tally b{display:block;font-family:var(--mono);font-size:15px;color:var(--c);font-weight:500}
+.note{font-size:12px;color:var(--muted);background:var(--soft);border-radius:3px;padding:6px 8px;margin:0;display:flex;gap:6px;align-items:flex-start}
+.note>span:first-child{flex:1;min-width:0}
+
+/* tree */
+.tree,.tree ul{list-style:none;margin:0;padding:0}
+.tree ul{margin-left:9px;padding-left:14px;border-left:1.5px solid var(--line)}
+.tree li{position:relative;padding:5px 0 3px}
+.tree ul>li::before{content:"";position:absolute;left:-14px;top:17px;width:11px;border-top:1.5px solid var(--line)}
+.tree ul>li:last-child::after{content:"";position:absolute;left:-15.5px;top:18.5px;bottom:0;width:2px;background:var(--panel)}
+.line{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px}
+.grp{font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.unit{font-weight:700;font-size:14px}
+.rel{font-weight:400;font-size:11.5px;color:var(--muted)}
+.ships{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.ship{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:2px 4px 2px 8px;border-radius:3px;background:var(--b);color:var(--ink);border:1px solid transparent}
+.ship i{font-style:normal;font-family:var(--mono);font-size:11.5px;background:var(--panel);color:var(--c);border-radius:2px;padding:0 5px;min-width:20px;text-align:center}
+.ship.mid{border:1px dashed var(--c);background:transparent}
+.ship.low{border:1px dashed var(--unk);background:transparent;color:var(--muted)}
+.ship .conf{font-size:10px;color:var(--c)}
+.ship.low .conf{color:var(--unk)}
+.xlink{font-size:12px;color:var(--muted);margin-top:4px;display:flex;gap:6px;align-items:baseline}
+.xlink::before{content:"";flex:none;width:16px;border-top:1.5px dashed var(--muted);transform:translateY(-3px)}
+.xlink>span:first-of-type{min-width:0}
+
+.c-mnr{--c:var(--mnr);--b:var(--mnr-bg)} .c-cas{--c:var(--cas);--b:var(--cas-bg)} .c-edu{--c:var(--edu);--b:var(--edu-bg)}
+.c-moa{--c:var(--moa);--b:var(--moa-bg)} .c-soe{--c:var(--soe);--b:var(--soe-bg)} .c-loc{--c:var(--loc);--b:var(--loc-bg)}
+.c-pla{--c:var(--pla);--b:var(--pla-bg)} .c-pvt{--c:var(--pvt);--b:var(--pvt-bg)} .c-unk{--c:var(--unk);--b:var(--unk-bg)}
+
+.span2{grid-column:span 2}
+@media (max-width:640px){.span2{grid-column:auto}}
+
+/* footnotes */
+.foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.foot section{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px 16px;min-width:0}
+.foot h3{font-size:15px;margin-bottom:6px}
+.foot ul{margin:0;padding-left:18px}
+.foot li{margin:3px 0}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.legend .xlink{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+</style>
+</head>
+<body>
+<div class="wrap"><header><h1>中國科研船隸屬圖</h1></header><div class="legend" aria-label="圖例"><span class="lab">體系</span><span class="key c-mnr"><span class="sw"></span><span>自然資源部（含中國地質調查局）</span></span><span class="key c-cas"><span class="sw"></span><span>中國科學院</span></span><span class="key c-edu"><span class="sw"></span><span>高校</span></span><span class="key c-moa"><span class="sw"></span><span>農業農村部</span></span><span class="key c-soe"><span class="sw"></span><span>央企</span></span><span class="key c-loc"><span class="sw"></span><span>省級實驗室／地方政府</span></span><span class="key c-pla"><span class="sw"></span><span>解放軍</span></span><span class="key c-pvt"><span class="sw"></span><span>民營企業</span></span><span class="key c-unk"><span class="sw"></span><span>未查得</span></span><hr><span class="lab">標記</span><span class="key"><span class="ship c-mnr"><span>船名</span><i>2</i></span><span>通報筆數</span></span><span class="key"><span class="ship c-mnr mid"><span>船名</span><i>2</i><span class="conf">中</span></span><span>信心「中」（推定）</span></span><span class="key"><span class="ship c-unk low"><span>船名</span><i>1</i><span class="conf">低</span></span><span>信心「低」</span></span><span class="key"><span class="xlink"><span>虛線</span></span><span>非隸屬的關聯（委託管理、牽頭建設、任務委託）</span></span></div><div class="root"><div class="node"><span>中華人民共和國</span><small>中央：國務院、中央軍事委員會；地方：省級人民政府</small></div><div class="trunk"></div></div><section class="tier"><div class="tier-head"><h2>中央：國務院</h2><p><span class="num">5 個部門或機構、36 艘船、108 筆通報</span></p></div><div class="cards"><article class="card c-mnr span2"><div class="card-head"><div><h3>自然資源部</h3><span class="type">國務院組成部門；對外保留「國家海洋局」牌子</span></div><div class="tally"><b>19 艘</b><span>60 筆</span></div></div><ul class="tree"><li><div class="line"><span class="grp">派出機構（原國家海洋局各分局）</span></div><ul><li><div class="line"><span class="unit">北海局</span><span class="rel">青島</span></div><div class="ships"><span class="ship c-mnr"><span>極地號</span><i>6</i></span><span class="ship c-mnr mid"><span>向陽紅06</span><i>4</i><span class="conf">中</span></span></div><div class="xlink"><span>向陽紅06 曾入列中國海監，兼具執法巡航任務</span></div></li><li><div class="line"><span class="unit">東海局</span><span class="rel">上海</span></div><div class="ships"><span class="ship c-mnr"><span>向陽紅22</span><i>5</i></span></div></li><li><div class="line"><span class="unit">南海局</span><span class="rel">廣州</span></div><div class="ships"><span class="ship c-mnr"><span>向陽紅05</span><i>2</i></span><span class="ship c-mnr mid"><span>向陽紅33</span><i>2</i><span class="conf">中</span></span></div></li></ul></li><li><div class="line"><span class="grp">直屬事業單位</span></div><ul><li><div class="line"><span class="unit">第一海洋研究所</span><span class="rel">海洋一所・青島</span></div><div class="ships"><span class="ship c-mnr"><span>向陽紅01</span><i>4</i></span><span class="ship c-mnr mid"><span>向陽紅18</span><i>2</i><span class="conf">中</span></span></div></li><li><div class="line"><span class="unit">第二海洋研究所</span><span class="rel">海洋二所・杭州</span></div><div class="ships"><span class="ship c-mnr"><span>向陽紅10</span><i>3</i></span><span class="ship c-mnr"><span>大洋號</span><i>4</i></span></div><div class="xlink"><span>大洋號由二所委託管理，產權屬大洋辦</span></div><div class="xlink"><span>深藍探索科技集團稱「經營管理」向陽紅10，產權仍屬二所</span></div></li><li><div class="line"><span class="unit">第三海洋研究所</span><span class="rel">海洋三所・廈門</span></div><div class="ships"><span class="ship c-mnr mid"><span>向陽紅03</span><i>7</i><span class="conf">中</span></span></div></li><li><div class="line"><span class="unit">中國大洋協會辦公室（大洋辦）／中國大洋事務管理局</span></div><div class="ships"><span class="ship c-mnr mid"><span>大洋一號</span><i>3</i><span class="conf">中</span></span></div><div class="xlink"><span>大洋號的產權方，委託二所營運</span></div><div class="xlink"><span>大洋一號實際運管單位未查證；與大洋號是不同船</span></div></li><li><div class="line"><span class="unit">中國極地研究中心</span><span class="rel">上海</span></div><div class="ships"><span class="ship c-mnr mid"><span>雪龍號</span><i>2</i><span class="conf">中</span></span><span class="ship c-mnr"><span>雪龍2號</span><i>4</i></span></div></li><li><div class="line"><span class="unit">國家深海基地管理中心</span><span class="rel">青島・營運單位</span></div><div class="ships"><span class="ship c-mnr"><span>深海一號</span><i>4</i></span></div></li><li><div class="line"><span class="unit">中國地質調查局</span><span class="rel">部管直屬局</span></div><ul><li><div class="line"><span class="unit">青島海洋地質研究所</span></div><div class="ships"><span class="ship c-mnr"><span>海洋地質九號</span><i>1</i></span></div></li><li><div class="line"><span class="unit">廣州海洋地質調查局</span></div><div class="ships"><span class="ship c-mnr"><span>海洋地質十號</span><i>1</i></span><span class="ship c-mnr"><span>海洋地質8號</span><i>2</i></span><span class="ship c-mnr mid"><span>海洋地質12號</span><i>3</i><span class="conf">中</span></span><span class="ship c-mnr mid"><span>海洋地質4號</span><i>1</i><span class="conf">中</span></span></div></li></ul></li></ul></li></ul></article><article class="card c-cas"><div class="card-head"><div><h3>中國科學院</h3><span class="type">國務院直屬事業單位</span></div><div class="tally"><b>7 艘</b><span>19 筆</span></div></div><ul class="tree"><li><div class="line"><span class="grp">直屬研究所</span></div><ul><li><div class="line"><span class="unit">深海科學與工程研究所</span><span class="rel">三亞</span></div><div class="ships"><span class="ship c-cas"><span>探索一號</span><i>4</i></span><span class="ship c-cas"><span>探索二號</span><i>1</i></span><span class="ship c-cas"><span>探索三號</span><i>4</i></span></div><div class="xlink"><span>探索二號出資方為海南省深海技術實驗室，深海所負責運維</span></div></li><li><div class="line"><span class="unit">海洋研究所</span><span class="rel">青島</span></div><div class="ships"><span class="ship c-cas"><span>科學號</span><i>4</i></span><span class="ship c-cas mid"><span>科學三號</span><i>2</i><span class="conf">中</span></span></div></li><li><div class="line"><span class="unit">南海海洋研究所</span><span class="rel">廣州</span></div><div class="ships"><span class="ship c-cas mid"><span>實驗1號</span><i>1</i><span class="conf">中</span></span><span class="ship c-cas"><span>實驗6號</span><i>3</i></span></div><div class="xlink"><span>黃岩島浮動平台屬南海所，由粵湛漁科6拆除（船東未查得）</span></div></li></ul></li></ul></article><article class="card c-edu"><div class="card-head"><div><h3>教育部</h3><span class="type">國務院組成部門</span></div><div class="tally"><b>6 艘</b><span>21 筆</span></div></div><ul class="tree"><li><div class="line"><span class="grp">直屬高校</span></div><ul><li><div class="line"><span class="unit">中國海洋大學</span><span class="rel">青島</span></div><div class="ships"><span class="ship c-edu"><span>東方紅2</span><i>1</i></span><span class="ship c-edu"><span>東方紅3</span><i>4</i></span></div></li><li><div class="line"><span class="unit">廈門大學</span></div><div class="ships"><span class="ship c-edu"><span>嘉庚號</span><i>6</i></span></div></li><li><div class="line"><span class="unit">同濟大學</span><span class="rel">上海</span></div><div class="ships"><span class="ship c-edu"><span>同濟號</span><i>7</i></span></div></li><li><div class="line"><span class="unit">中山大學</span><span class="rel">廣州／珠海</span></div><div class="ships"><span class="ship c-edu"><span>中山大學號</span><i>1</i></span><span class="ship c-edu"><span>中山大學極地號</span><i>2</i></span></div><div class="xlink"><span>牽頭建設管理「南方海洋實驗室（珠海）」，見地方・廣東省</span></div></li></ul></li></ul></article><article class="card c-moa"><div class="card-head"><div><h3>農業農村部</h3><span class="type">國務院組成部門</span></div><div class="tally"><b>3 艘</b><span>5 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">中國水產科學研究院</span><span class="rel">部直屬事業單位</span></div><ul><li><div class="line"><span class="unit">黃海水產研究所</span><span class="rel">青島</span></div><div class="ships"><span class="ship c-moa mid"><span>藍海101</span><i>1</i><span class="conf">中</span></span></div><div class="xlink"><span>另有說法為東海水產研究所，所屬待確認</span></div></li><li><div class="line"><span class="unit">東海水產研究所</span><span class="rel">上海</span></div><div class="ships"><span class="ship c-moa"><span>藍海201</span><i>2</i></span></div></li><li><div class="line"><span class="unit">南海水產研究所</span><span class="rel">廣州</span></div><div class="ships"><span class="ship c-moa"><span>南鋒號</span><i>2</i></span></div></li></ul></li></ul></article><article class="card c-soe"><div class="card-head"><div><h3>國務院國資委</h3><span class="type">國務院直屬特設機構，監管中央企業</span></div><div class="tally"><b>1 艘</b><span>3 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">中國船舶集團有限公司</span><span class="rel">央企</span></div><ul><li><div class="line"><span class="unit">第七六〇研究所</span><span class="rel">大連</span></div><div class="ships"><span class="ship c-soe mid"><span>北調996</span><i>3</i><span class="conf">中</span></span></div></li></ul></li></ul><p class="note"><span>七六〇所是委託建造方，日常營運方為推定。</span></p></article></div></section><section class="tier"><div class="tier-head"><h2>中央：中央軍事委員會</h2><p><span>非民用科研船，篩選時可排除：</span><span class="num">4 艘船、4 筆通報</span></p></div><div class="cards"><article class="card c-pla"><div class="card-head"><div><h3>中國人民解放軍</h3><span class="type">中央軍委領導</span></div><div class="tally"><b>4 艘</b><span>4 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">軍事航天部隊</span><span class="rel">2024/4 軍改後成立</span></div><ul><li><div class="line"><span class="unit">中國衛星海上測控部</span><span class="rel">江陰・航天測控船</span></div><div class="ships"><span class="ship c-pla"><span>遠望5號</span><i>1</i></span><span class="ship c-pla"><span>遠望7號</span><i>1</i></span></div></li></ul></li><li><div class="line"><span class="unit">海軍</span><span class="rel">軍種</span></div><ul><li><div class="line"><span class="unit">636A 型海洋測量船</span><span class="rel">所屬部隊未查得</span></div><div class="ships"><span class="ship c-pla mid"><span>海洋23號</span><i>1</i><span class="conf">中</span></span><span class="ship c-pla mid"><span>海洋24號</span><i>1</i><span class="conf">中</span></span></div><div class="xlink"><span>即錢學森艦、鄧稼先艦，軍艦另有民用名稱</span></div></li></ul></li></ul></article></div></section><section class="tier"><div class="tier-head"><h2>地方：省級人民政府</h2><p><span class="num">3 個省市、3 艘船、5 筆通報</span></p></div><div class="cards"><article class="card c-edu"><div class="card-head"><div><h3>上海市人民政府</h3><span class="type">直轄市</span></div><div class="tally"><b>1 艘</b><span>2 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">上海海洋大學</span><span class="rel">市屬高校；體系歸「高校」</span></div><div class="ships"><span class="ship c-edu"><span>淞航</span><i>2</i></span></div></li></ul></article><article class="card c-loc"><div class="card-head"><div><h3>廣東省人民政府</h3><span class="type">省</span></div><div class="tally"><b>1 艘</b><span>2 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">南方海洋科學與工程廣東省實驗室（珠海）</span><span class="rel">省級實驗室</span></div><div class="ships"><span class="ship c-loc"><span>珠海雲</span><i>2</i></span></div><div class="xlink"><span>由中山大學（教育部）牽頭建設管理</span></div></li></ul></article><article class="card c-loc"><div class="card-head"><div><h3>福建省人民政府</h3><span class="type">省</span></div><div class="tally"><b>1 艘</b><span>1 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">福建省科學技術廳</span><span class="rel">省政府組成部門</span></div><ul><li><div class="line"><span class="unit">福建海洋研究所</span><span class="rel">廈門・廳直屬</span></div><div class="ships"><span class="ship c-loc"><span>延平2號</span><i>1</i></span></div><div class="xlink"><span>曾改裝為震源船，福建省地震局可能是合作使用方</span></div></li></ul></li></ul></article></div></section><section class="tier"><div class="tier-head"><h2>行政隸屬體系外</h2><p><span>上級機關為「無」或未查得：</span><span class="num">8 艘船、10 筆通報</span></p></div><div class="cards"><article class="card c-pvt"><div class="card-head"><div><h3>民營企業</h3><span class="type">無上級機關</span></div><div class="tally"><b>3 艘</b><span>5 筆</span></div></div><ul class="tree"><li><div class="line"><span class="unit">深藍探索科技集團有限公司</span><span class="rel">上海楊浦・民營屬推定</span></div><div class="ships"><span class="ship c-pvt"><span>海力</span><i>3</i></span><span class="ship c-pvt mid"><span>沈括號</span><i>1</i><span class="conf">中</span></span></div><div class="xlink"><span>官網稱經營管理向陽紅10、沈括號等 12 艘科考船</span></div><div class="xlink"><span>中國大洋協會科普船隊的總協調方</span></div><div class="xlink"><span>沈括號只查到營運方，產權單位未查得</span></div></li><li><div class="line"><span class="unit">珠海嘉海海洋科技有限公司</span><span class="rel">珠海</span></div><div class="ships"><span class="ship c-pvt"><span>嘉海科7</span><i>1</i></span></div></li></ul></article><article class="card c-unk"><div class="card-head"><div><h3>船東未查得</h3><span class="type">無法放進行政架構</span></div><div class="tally"><b>5 艘</b><span>5 筆</span></div></div><ul class="tree"><li><div class="ships"><span class="ship c-unk low"><span>海科001</span><i>1</i><span class="conf">低</span></span><span class="ship c-unk low"><span>海絲路6號</span><i>1</i><span class="conf">低</span></span><span class="ship c-unk low"><span>粵湛漁科6</span><i>1</i><span class="conf">低</span></span><span class="ship c-unk low"><span>粵霞漁指20028</span><i>1</i><span class="conf">低</span></span><span class="ship c-unk low"><span>向陽紅203</span><i>1</i><span class="conf">低</span></span></div></li></ul><p class="note"><span>粵湛漁科6 執行的是中科院南海海洋所的任務，但船東不明，所以不畫在南海所下面。</span></p><p class="note"><span>向陽紅系列多屬自然資源部，但向陽紅203 未見官方資料，不推定。</span></p></article></div></section><div class="foot"><section><h3>名稱沿革</h3><ul><li><span>2018 年國務院機構改革，國家海洋局併入自然資源部，對外保留牌子。原文中的「國家海洋局第一／第二海洋研究所」就是今天的自然資源部海洋一所／二所。</span> </li><li><span>原國家海洋局北海、東海、南海分局於 2019 年改為自然資源部北海局、東海局、南海局（派出機構）。武漢市政府稿寫的「國家海洋局南海調查中心」是南海局的下屬單位舊稱。</span> </li><li><span>中國地質調查局由自然資源部管理，寫作「自然資源部→中國地質調查局」。</span> </li><li><span>中國衛星海上測控部原屬戰略支援部隊，2024 年 4 月起改隸軍事航天部隊。</span> </li></ul></section><section><h3>讀圖說明</h3><ul><li><span>所屬和營運不同時（大洋號、深海一號、實驗1號），以營運管理單位為準。</span> </li><li><span>卡片右上角與各段標題的艘數、筆數會依船名和筆數自動加總。</span> </li><li><span>筆數依 2024–2026 年太平洋與印度洋通報紀錄（共 123 筆），含船名加註「(?)」的推定紀錄；「探索一號」「探索1號」合計。</span> </li></ul></section></div></div>
+</body>
+</html>
